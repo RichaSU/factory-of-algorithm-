@@ -162,6 +162,3 @@ bonelement=function(checkedone,sortie,givenindice){
 
 ```
 
-```{r code = readLines(knitr::purl("C:/Users/suric/Documents/RSU/HardwareStore.Rmd", documentation = 0)), echo = T, eval = T}
-
-```
