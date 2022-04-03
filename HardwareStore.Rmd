@@ -1,0 +1,167 @@
+---
+title: "Untitled"
+output: pdf_document
+---
+
+```{r}
+setwd("C:/Users/suric/Documents/RSU/")
+```
+
+```{r}
+export=function(tableau,sheetname,fichier){
+  tableau=data.frame(tableau)
+  write.xlsx(
+    x=tableau,
+    file=fichier,
+    sheetName = sheetname,
+    col.names = TRUE,
+    row.names = F,
+    append = T, #permet de rajouter les onglets
+    showNA = TRUE, # faut pas oublier remplace #N/A par NA
+    password = NULL
+  )
+}
+
+```
+
+
+
+
+```{r}
+#utile pour length(unique(v2))<length(v2), ça veut dire une modalité est apparue dans plusieurs lignes de dataframe qui contient v2 comme colonne, donc quand plusieurs meme modalités apparaisent dans v1 et également dans v2 la modalité correspondant, on match la 1er avec la 1ere, 2eme avec 2eme ...etc, mais si le nombre d'occurence en v2 est inférieur à celui de v1 alor faut répéter de donner l'indice de la derniere ocuurence à ceux dépasse dans v1
+matchforte=function(v1,v2){
+  un_v=v1
+  for (e in v1){
+    occ=sum(v2==e)
+    occ2=sum(v1==e)
+    un_v[which(v1==e)]=replace_na((1:occ)[1:occ2],tail(1:occ,1))
+  }
+  pos=c()
+  un_v=as.numeric(un_v)
+  i=0
+  for (e in v1){
+    i=i+1
+    if (sum(v1==e)==1){
+      ind=which(v2==e)
+    }else{
+      ind=which(v2==e)[un_v[i]]
+    }
+    pos=c(pos,ind)
+  }
+  return(pos)
+}
+```
+
+
+```{r}
+# extract multiple pattern in a vector
+grep_fort=function(Vptrn,Vs,premier){
+  result=c()
+  for (ele in Vptrn){
+    if (is.na(ele)){
+      res=""
+    }else{
+      res=grep(ele,Vs,value = T)
+      if (length(res)==0){
+        res=""
+      }else{res=res}
+    }
+    result=c(result,res)
+  }
+  if(premier=="oui"){
+    result=result[1]
+  }else if(premier=="non"){
+    result=result
+  }
+  return(result)
+}
+```
+
+```{r}
+# remove NA from a vector
+removeNA=function(v){
+  v=v[!is.na(v)]
+  return(v)
+}
+```
+
+```{r}
+# replace all match by their specific replacement
+replc_forte=function(chaine,ptrn,rplcby){
+  berplced=unlist(str_extract_all(chaine,ptrn))
+  nb=length(berplced)
+  for (i in 1:nb){
+    chaine=str_replace(chaine,berplced[i],rplcby[i])
+  }
+  return(chaine)
+}
+```
+
+```{r}
+# for extract all matches, those matches are successively in on string, then extract it in one sigle string that appears in string original
+extrct_forte=function(chaine,vptrn){
+  nb=str_count(chaine,vptrn)
+  res=unlist(str_extract_all(chaine,vptrn))
+  K=length(res)
+  if (K==0){
+    v_ch=NA
+  }else if(K==1){
+    v_ch=list(res)
+  }else  {
+    arecp=list()
+    i=0
+    for (n in (1:K)){
+      for( a in 0:(K-n)){
+        i=i+1
+        vseq=(1:n)+a
+        arecp[[i]]=vseq
+      }
+      
+    }
+    v_ch=list()
+    recp=c()
+    for (j in length(arecp):1){
+      segchaine=paste0(res[arecp[[j]]],collapse = "")
+      
+      if (str_detect(chaine,segchaine)){
+        if (length(intersect(recp,arecp[[j]]))==0){
+          recp=c(recp,arecp[[j]])
+          v_ch[[j]]=segchaine
+        }
+      }
+    }
+    v_ch[sapply(v_ch, is.null)] <- NULL
+  }
+  
+  return(v_ch)
+  
+}
+
+extrct_forte("EXTRT_m54_l4_d9_ipad_e78_t1_sun_H5","_.[:digit:]+")
+```
+
+```{r}
+
+bonelement=function(checkedone,sortie,givenindice){
+  lth=length(sortie)
+  if (lth==0){
+    elmt=checkedone
+  }else if (lth==1){
+    elmt=sortie
+  }else{
+    new_num=givenindice %% lth
+    if (new_num==0){
+      elmt=sortie[lth]
+    }else{
+      elmt=sortie[new_num]
+    }
+  }
+  return(elmt)
+  
+}
+
+```
+
+```{r code = readLines(knitr::purl("C:/Users/suric/Documents/RSU/HardwareStore.Rmd", documentation = 0)), echo = T, eval = T}
+
+```
